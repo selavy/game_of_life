@@ -6,10 +6,10 @@
 #define SIZE 23
 #define DEAD 0
 #define ALIVE 1
-//#define TURNS 100
 
 void print_state(char * board);
 void turn(char * board, char * new_board);
+void print_usage(char * name);
 
 int main(int argc, char **argv) {
   char board1[SIZE*SIZE];
@@ -34,7 +34,13 @@ int main(int argc, char **argv) {
       if (1 != sscanf(argv[i]+8, "%d", &turns)) {
 	turns = 100;
       }
-    } 
+    } else if (strncmp(argv[i], "--help", 6) == 0) {
+      print_usage(argv[0]);
+      exit(0);
+    } else if (strncmp(argv[i], "-h", 2) == 0) {
+      print_usage(argv[0]);
+      exit(0);
+    }
   }
 
   if (sleep_time > 10 || sleep_time < 0) {
@@ -48,11 +54,8 @@ int main(int argc, char **argv) {
   memset(&(board1[0]), DEAD, sizeof(*board1) * SIZE * SIZE);
   memset(&(board2[0]), DEAD, sizeof(*board2) * SIZE * SIZE);
   
-  // INITIAL POSITION
-
-  printf("sleep time = %d\nturns = %d\n", sleep_time, turns);
+  // SETUP INITIAL POSITION
   if (position) {
-    printf("position = %s\n", position);
     //  TOAD / Period 2
     if (strcmp(position, "toad") == 0) {
       board1[4*SIZE + 4] = ALIVE;
@@ -136,7 +139,8 @@ int main(int argc, char **argv) {
       board1[15*SIZE + 15] = ALIVE;
       board1[14*SIZE + 15] = ALIVE;
     } else {
-      printf("Starting positions: toad, blinker, beacon, r-pentomino\n");
+      print_usage(argv[0]);
+      free(position);
       exit(0);
     }
   } else {
@@ -237,4 +241,8 @@ void turn(char * board, char * new_board) {
       }
     }
   }
+}
+
+void print_usage(char * name) {
+  printf("usage: %s (OPTIONAL: --sleep-time=[INTEGER] --position=[STRING] --turns=[INTEGER] --help)\n\t--sleep-time: number of seconds to wait between each iteration\n\t--position: starting position. Available options are: toad, blinker, beacon, r-pentomino, pulsar [default = r-pentomino]\n\t--turns: number of iterations to do [default = 100]\n\t--help: display this usage message\n", name);
 }
